@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medicine Inventory Tracker</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            color: white;
+            text-align: center;
+            padding: 30px;
+        }
+        .header h1 {
+            font-size: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            padding: 20px;
+            background: #f8f9ff;
+        }
+        .stat {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: transform 0.2s;
+        }
+        .stat:hover {
+            transform: translateY(-3px);
+        }
+        .stat i {
+            font-size: 1.8rem;
+            color: #4facfe;
+            margin-bottom: 10px;
+        }
+        .form-section {
+            padding: 20px;
+            background: #f8f9ff;
+            border-top: 1px solid #eee;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            font-weight: 600;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        input, select {
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 0.95rem;
+        }
+        input:focus {
+            outline: none;
+            border-color: #4facfe;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-primary:hover {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .controls {
+            padding: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            background: white;
+            border-bottom: 1px solid #eee;
+        }
+        .search-box {
+            position: relative;
+            flex: 1;
+            min-width: 250px;
+        }
+        .search-box i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+        }
+        .search-box input {
+            padding-left: 40px;
+            width: 100%;
+        }
+        .btn-secondary, .btn-danger {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-secondary {
+            background: #a8edea;
+        }
+        .btn-danger {
+            background: #ff6b6b;
+            color: white;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        th {
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            color: white;
+        }
+        tr:hover {
+            background: #f8f9ff;
+        }
+        .status {
+            padding: 5px 10px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        .good {
+            background: #d4edda;
+            color: #155724;
+        }
+        .low {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .expiring, .expired {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .action-btn {
+            padding: 6px 10px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-right: 5px;
+        }
+        .edit {
+            background: #00b894;
+            color: white;
+        }
+        .delete {
+            background: #ff6b6b;
+            color: white;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 400px;
+            width: 90%;
+        }
+        .modal-header {
+            background: #4facfe;
+            color: white;
+            padding: 15px;
+            border-radius: 10px 10px 0 0;
+        }
+        .modal-body {
+            padding: 15px;
+        }
+        .modal-footer {
+            text-align: right;
+            padding: 10px;
+        }
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            .controls {
+                flex-direction: column;
+            }
+            th, td {
+                font-size: 0.85rem;
+                padding: 8px;
+            }
+        }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-pills"></i> Medicine Inventory Tracker</h1>
+        </div>
+
+        <div class="stats" id="stats">
+            <div class="stat"><i class="fas fa-box"></i><h3 id="total">0</h3><span>Total Medicines</span></div>
+            <div class="stat"><i class="fas fa-exclamation-triangle"></i><h3 id="lowStock">0</h3><span>Low Stock</span></div>
+            <div class="stat"><i class="fas fa-clock"></i><h3 id="expiring">0</h3><span>Expiring Soon</span></div>
+        </div>
+
+        <div class="form-section">
+            <h2><i class="fas fa-plus"></i> Add Medicine</h2>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label><i class="fas fa-prescription-bottle-alt"></i> Name</label>
+                    <input id="name" placeholder="e.g., Paracetamol" required>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-hashtag"></i> Batch</label>
+                    <input id="batch" placeholder="e.g., BATCH123" required>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-calendar-alt"></i> Expiry</label>
+                    <input type="date" id="expiry" required>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-layer-group"></i> Quantity</label>
+                    <input type="number" id="qty" min="1" placeholder="e.g., 100" required>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-coins"></i> Price</label>
+                    <input type="number" id="price" min="0" step="0.01" placeholder="e.g., 2.50" required>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-thermometer-half"></i> Min Stock</label>
+                    <input type="number" id="minStock" min="1" placeholder="e.g., 10" required>
+                </div>
+            </div>
+            <button class="btn-primary" onclick="addMedicine()"><i class="fas fa-plus"></i> Add Medicine</button>
+        </div>
+
+        <div class="controls">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input id="search" placeholder="Search medicines..." oninput="filterTable()">
+            </div>
+            <select id="filter" onchange="filterTable()">
+                <option value="all">All Medicines</option>
+                <option value="low">Low Stock</option>
+                <option value="expiring">Expiring Soon</option>
+                <option value="expired">Expired</option>
+            </select>
+            <button class="btn-secondary" onclick="exportCSV()"><i class="fas fa-download"></i> Export CSV</button>
+            <button class="btn-danger" onclick="clearAll()"><i class="fas fa-trash"></i> Clear All</button>
+        </div>
+
+        <table id="table">
+            <thead>
+                <tr>
+                    <th>Medicine</th>
+                    <th>Batch</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Expiry</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+        </table>
+
+        <div id="alertModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3><i class="fas fa-exclamation-triangle"></i> Low Stock Alert</h3>
+                </div>
+                <div class="modal-body">
+                    <p>These medicines are running low:</p>
+                    <ul id="lowStockList"></ul>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-primary" onclick="document.getElementById('alertModal').style.display='none'">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Supabase-backed client scripts -->
+    <script src="supabase-config.js"></script>
+    <script src="medicine.js"></script>
+    <script src="web-client.js"></script>
+</body>
+</html>
